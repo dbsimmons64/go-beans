@@ -1,0 +1,62 @@
+{{template "main" .}}
+{{define "content" }}
+{{template "form" .}}
+
+<!-- Table Section -->
+<section class="bg-white p-4 sm:p-6 rounded-lg shadow mb-6">
+    <h2 class="text-lg sm:text-xl font-bold mb-2 sm:mb-4">Transactions</h2>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 text-xs sm:text-sm">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2 border-b-2 border-gray-200 text-left font-semibold text-gray-700">
+                        Date
+                    </th>
+                    <th class="px-4 py-2 border-b-2 border-gray-200 text-left font-semibold text-gray-700">
+                        Who
+                    </th>
+                    <th class="px-4 py-2 border-b-2 border-gray-200 text-left font-semibold text-gray-700">
+                        Payee
+                    </th>
+                    <th class="px-4 py-2 border-b-2 border-gray-200 text-left font-semibold text-gray-700">
+                        Amount
+                    </th>
+                    <th class="px-4 py-2 border-b-2 border-gray-200 text-left font-semibold text-gray-700">
+                        Description
+                    </th>
+
+                    <th class="px-4 py-2 border-b-2 border-gray-200 text-left font-semibold text-gray-700">
+                        Category
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Transactions}}
+                <tr class="hover:bg-gray-50">
+                    <td data-role="txn-date" class="px-4 py-2 border-b border-gray-200">
+                        {{.Txn_date}}
+                    </td>
+                    <td data-role="txn-who" class="px-4 py-2 border-b border-gray-200">
+                        {{.Who}}
+                    </td>
+                    <td data-role="txn-payee" class="px-4 py-2 border-b border-gray-200">
+                        {{.Payee}}
+                    </td>
+                    <td data-role="txn-amount" class="px-4 py-2 border-b border-gray-200">
+                        {{.Amount}}
+                    </td>
+                    <td data-role="txn-description" class="px-4 py-2 border-b border-gray-200">
+                        {{.Description}}
+                    </td>
+
+                    <td data-role="txn-category" class="px-4 py-2 border-b border-gray-200">
+                        {{.Category}}
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{{end}}
