@@ -7,6 +7,7 @@ func (app *app) routes() http.Handler {
 	mux.HandleFunc("/", app.Home)
 	mux.HandleFunc("/about", app.About)
 	mux.HandleFunc("/contact", app.Contact)
+	mux.HandleFunc("POST /transactions/create", app.storeTransaction)
 
 	// Serve static files
 	fileserver := http.FileServer(http.Dir("./assets/static"))

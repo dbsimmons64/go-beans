@@ -1,0 +1,18 @@
+{{define "transaction-form" }}
+
+
+
+<form action="/transactions/create" method="POST">
+
+    {{inputField .Form "txn_date"}}
+    {{inputField .Form "who"}}
+    {{inputField .Form "description"}}
+    {{inputField .Form "payee"}}
+    {{inputField .Form "amount"}}
+    {{inputField .Form "category"}}
+
+    <div>
+        <button>Create Transaction</button>
+    </div>
+</form>
+{{end}}

@@ -2,12 +2,14 @@ package repos
 
 import (
 	"database/sql"
+	"net/url"
 
 	"github.com/dbsimmons64/go-beans/models"
 )
 
 type TransactionRepository interface {
 	All() ([]models.Transaction, error)
+	Insert(data url.Values) error
 }
 
 type TransactionRepositoryDB struct {
@@ -40,5 +42,23 @@ func (t TransactionRepositoryDB) All() ([]models.Transaction, error) {
 	}
 
 	return transactions, nil
+}
+
+func (t TransactionRepositoryDB) Insert(data url.Values) error {
+
+	stmt := `
+    INSERT INTO transactions (txn_date, who, description, payee, amount, category,  inserted_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+  `
+	_, err := t.DB.Exec(stmt,
+		data.Get("txn_date"),
+		data.Get("who"),
+		data.Get("description"),
+		data.Get("payee"),
+		data.Get("amount"),
+		data.Get("category"),
+	)
+
+	return err
 
 }
