@@ -4,12 +4,12 @@
 
 <form action="/transactions/create" method="POST">
 
-    {{inputField .Form "txn_date"}}
-    {{inputField .Form "who"}}
-    {{inputField .Form "description"}}
-    {{inputField .Form "payee"}}
-    {{inputField .Form "amount"}}
-    {{inputField .Form "category"}}
+    {{inputField .Form "txn_date" "Date"}}
+    {{inputField .Form "who" "Who"}}
+    {{inputField .Form "description" "Description"}}
+    {{inputField .Form "payee" "Payee"}}
+    {{inputField .Form "amount" "Amount"}}
+    {{inputField .Form "category" "Category"}}
 
     <div>
         <button>Create Transaction</button>

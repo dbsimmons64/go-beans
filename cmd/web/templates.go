@@ -48,11 +48,6 @@ func newTemplateCache() (TemplateCache, error) {
 
 		cache[name] = t
 
-		// Debug: List parsed templates
-		for _, tmpl := range t.Templates() {
-			fmt.Println("Parsed template:", tmpl.Name())
-		}
-
 	}
 
 	return cache, nil
@@ -105,21 +100,23 @@ func renderComponent(tmpl string, data any) template.HTML {
 	return template.HTML(buffer.String())
 }
 
-func inputField(form *forms.Form, field string) template.HTML {
+func inputField(form *forms.Form, field, label string) template.HTML {
 
 	data := struct {
 		Field  string
 		Value  string
+		Label  string
 		Errors []string
 	}{
 		Field:  field,
 		Value:  form.Get(field),
+		Label:  label,
 		Errors: form.Errors.Get(field),
 	}
 
 	tmpl := `
 		<div>
-			<label for="{{.Field}}">{{.Field}}</label>
+			<label for="{{.Field}}">{{.Label}}</label>
 			{{range .Errors}}
 				<p class="text-red-600 mt-2 text-sm">{{.}}</p>
 			{{end}}

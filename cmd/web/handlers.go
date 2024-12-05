@@ -1,12 +1,23 @@
 package main
 
 import (
+	"fmt"
+	"html"
 	"net/http"
 
 	"github.com/dbsimmons64/go-beans/forms"
 )
 
 func (app *app) Home(w http.ResponseWriter, r *http.Request) {
+
+	// The pattern "/" matches all paths not matched by other registered routes.
+	// We can use this fact to determine if the request is for an unknown route.
+	if r.URL.Path != "/" {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Error: handler for %s not found", html.EscapeString(r.URL.Path))
+		return
+	}
+
 	transactions, err := app.transactionService.ListTransactions()
 	form := forms.New(r.PostForm)
 
