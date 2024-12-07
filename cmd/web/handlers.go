@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"html"
-	"html/template"
 	"net/http"
 
 	"github.com/dbsimmons64/go-beans/forms"
@@ -27,14 +26,14 @@ func (app *app) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, "hello.page.html", pageData{"Form": form, "Transactions": transactions})
+	app.renderPage(w, "hello.page.html", pageData{"Form": form, "Transactions": transactions})
 
 }
 func (app *app) About(w http.ResponseWriter, r *http.Request) {
-	app.render(w, "about.page.html", nil)
+	app.renderPage(w, "about.page.html", nil)
 }
 func (app *app) Contact(w http.ResponseWriter, r *http.Request) {
-	app.render(w, "contact.page.html", nil)
+	app.renderPage(w, "contact.page.html", nil)
 }
 
 func (app *app) storeTransaction(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +52,7 @@ func (app *app) storeTransaction(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		app.render(w, "hello.page.html", pageData{"Form": form, "Transactions": transactions})
+		app.renderPage(w, "hello.page.html", pageData{"Form": form, "Transactions": transactions})
 		return
 	}
 
@@ -64,21 +63,4 @@ func (app *app) storeTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusFound)
-}
-
-func (app *app) playground(w http.ResponseWriter, r *http.Request) {
-
-	form := forms.New(r.PostForm)
-	form.Fields = []forms.Field{
-		&forms.TextField{
-			Attrs: forms.Attrs{
-				Name:  "Username",
-				Label: "User Name",
-			},
-		},
-	}
-	foo := template.HTML(form.Render())
-	raw := form.Render()
-	app.render(w, "playground.page.html", pageData{"Form": foo, "Raw": raw})
-
 }

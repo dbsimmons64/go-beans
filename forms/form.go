@@ -10,14 +10,12 @@ import (
 type Form struct {
 	Values url.Values
 	Errors errors
-	Fields []Field
 }
 
 func New(data url.Values) *Form {
 	return &Form{
 		Values: data,
 		Errors: errors(map[string][]string{}),
-		Fields: []Field{},
 	}
 }
 

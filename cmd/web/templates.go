@@ -24,7 +24,6 @@ func newTemplateCache() (TemplateCache, error) {
 	for _, page := range pages {
 
 		t, err := template.New(page).Funcs(template.FuncMap{
-			"sayHello":   sayHello,
 			"inputField": inputField,
 		}).ParseFiles(page)
 
@@ -53,7 +52,7 @@ func newTemplateCache() (TemplateCache, error) {
 	return cache, nil
 }
 
-func (app *app) render(w http.ResponseWriter, name string, data pageData) {
+func (app *app) renderPage(w http.ResponseWriter, name string, data pageData) {
 	t, ok := app.templateCache[name]
 
 	if !ok {
@@ -70,16 +69,6 @@ func (app *app) render(w http.ResponseWriter, name string, data pageData) {
 
 	buffer.WriteTo(w)
 
-}
-
-func sayHello(greeting, name string) template.HTML {
-	html := fmt.Sprintf(
-		`<div>
-			<p>%s %s</p>
-		</div>
-	`, greeting, name)
-
-	return template.HTML(html)
 }
 
 func renderComponent(tmpl string, data any) template.HTML {
@@ -116,11 +105,19 @@ func inputField(form *forms.Form, field, label string) template.HTML {
 
 	tmpl := `
 		<div>
-			<label for="{{.Field}}">{{.Label}}</label>
+			<label for="{{.Field}}" class="block text-sm font-medium text-gray-700">
+				{{.Label}} 
+			</label>
+			<input 
+				type="text" 
+				id="{{.Field}}" 
+				name="{{.Field}}" 
+				value='{{.Value}}' 
+				class="pl-2 h-6 mt-1 block w-full border border-black-900 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+			/>
 			{{range .Errors}}
 				<p class="text-red-600 mt-2 text-sm">{{.}}</p>
 			{{end}}
-			<input type="text" id="{{.Field}}" name="{{.Field}}" value='{{.Value}}' />
 		</div>
 	`
 	return renderComponent(tmpl, data)
