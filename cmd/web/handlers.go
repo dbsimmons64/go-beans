@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html"
+	"html/template"
 	"net/http"
 
 	"github.com/dbsimmons64/go-beans/forms"
@@ -63,4 +64,21 @@ func (app *app) storeTransaction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func (app *app) playground(w http.ResponseWriter, r *http.Request) {
+
+	form := forms.New(r.PostForm)
+	form.Fields = []forms.Field{
+		&forms.TextField{
+			Attrs: forms.Attrs{
+				Name:  "Username",
+				Label: "User Name",
+			},
+		},
+	}
+	foo := template.HTML(form.Render())
+	raw := form.Render()
+	app.render(w, "playground.page.html", pageData{"Form": foo, "Raw": raw})
+
 }

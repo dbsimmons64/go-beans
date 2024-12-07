@@ -109,7 +109,7 @@ func inputField(form *forms.Form, field, label string) template.HTML {
 		Errors []string
 	}{
 		Field:  field,
-		Value:  form.Get(field),
+		Value:  form.Values.Get(field),
 		Label:  label,
 		Errors: form.Errors.Get(field),
 	}

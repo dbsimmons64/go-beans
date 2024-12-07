@@ -8,27 +8,29 @@ import (
 )
 
 type Form struct {
-	url.Values
+	Values url.Values
 	Errors errors
+	Fields []Field
 }
 
 func New(data url.Values) *Form {
 	return &Form{
-		data,
-		errors(map[string][]string{}),
+		Values: data,
+		Errors: errors(map[string][]string{}),
+		Fields: []Field{},
 	}
 }
 
 func (f *Form) Required(fields ...string) {
 	for _, field := range fields {
-		if strings.TrimSpace(f.Get(field)) == "" {
+		if strings.TrimSpace(f.Values.Get(field)) == "" {
 			f.Errors[field] = append(f.Errors[field], "This field cannot be empty")
 		}
 	}
 }
 
 func (f *Form) MinLength(field string, length int) {
-	if utf8.RuneCountInString(f.Get(field)) < length {
+	if utf8.RuneCountInString(f.Values.Get(field)) < length {
 		f.Errors[field] = append(f.Errors[field], fmt.Sprintf("This field must be at least %d characters", length))
 	}
 }
