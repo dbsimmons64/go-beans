@@ -44,6 +44,7 @@ func (app *app) storeTransaction(w http.ResponseWriter, r *http.Request) {
 
 	form := forms.New(r.PostForm)
 	form.Required("txn_date", "who", "payee", "amount", "category")
+	form.ValidAmount("amount")
 
 	if !form.Valid() {
 		transactions, err := app.transactionService.ListTransactions()
