@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html"
 	"net/http"
+	"time"
 
 	"github.com/dbsimmons64/go-beans/forms"
 )
@@ -18,6 +19,10 @@ func (app *app) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	today := time.Now()
+	year, month, _ := today.Date()
+	months := ListMonths()
+	years := ListYears()
 	transactions, err := app.transactionService.ListTransactions()
 	form := forms.New(r.PostForm)
 
@@ -26,7 +31,14 @@ func (app *app) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.renderPage(w, "hello.page.html", pageData{"Form": form, "Transactions": transactions})
+	app.renderPage(w, "hello.page.html", pageData{
+		"Year":         year,
+		"Month":        month,
+		"Months":       months,
+		"Years":        years,
+		"Form":         form,
+		"Transactions": transactions,
+	})
 
 }
 func (app *app) About(w http.ResponseWriter, r *http.Request) {

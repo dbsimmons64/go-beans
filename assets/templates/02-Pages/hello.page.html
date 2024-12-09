@@ -1,6 +1,24 @@
 {{template "main" .}}
 {{define "content" }}
 
+{{$month := .Month}}
+{{$year := .Year}}
+
+Year:
+<select>
+    {{range .Years}}
+    <option {{if eq . $year}}selected{{end}} value="{{.}}">{{.}}</option>
+    {{end}}
+</select>
+
+
+Month:
+<select name="month" id="month">
+    {{range .Months}}
+    <option {{if eq .Value $month}}selected{{end}} value="{{.Value}}">{{.Name}}</option>
+    {{end}}
+</select>
+
 {{template "transaction-form" .}}
 
 <!-- Table Section -->

@@ -34,7 +34,6 @@ func (f *Form) MinLength(field string, length int) {
 	}
 }
 
-
 // Ensure the field is a valid currency field.
 // Valid in this case means optional digits before the decimal point and 1 or 2 digits
 // after the decimal point e.g. 12.34
@@ -49,4 +48,3 @@ func (f *Form) ValidAmount(field string) {
 func (f *Form) Valid() bool {
 	return len(f.Errors) == 0
 }
-Ÿ
