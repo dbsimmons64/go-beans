@@ -25,6 +25,7 @@ func newTemplateCache() (TemplateCache, error) {
 
 		t, err := template.New(page).Funcs(template.FuncMap{
 			"inputField": inputField,
+			"dateField":  dateField,
 		}).ParseFiles(page)
 
 		// t, err := t.ParseFiles(page)
@@ -110,6 +111,41 @@ func inputField(form *forms.Form, field, label string) template.HTML {
 			</label>
 			<input 
 				type="text" 
+				id="{{.Field}}" 
+				name="{{.Field}}" 
+				value='{{.Value}}' 
+				class="pl-2 h-6 mt-1 block w-full border border-black-900 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+			/>
+			{{range .Errors}}
+				<p class="text-red-600 mt-2 text-sm">{{.}}</p>
+			{{end}}
+		</div>
+	`
+	return renderComponent(tmpl, data)
+
+}
+
+func dateField(form *forms.Form, field, label string) template.HTML {
+
+	data := struct {
+		Field  string
+		Value  string
+		Label  string
+		Errors []string
+	}{
+		Field:  field,
+		Value:  form.Values.Get(field),
+		Label:  label,
+		Errors: form.Errors.Get(field),
+	}
+
+	tmpl := `
+		<div>
+			<label for="{{.Field}}" class="block text-sm font-medium text-gray-700">
+				{{.Label}} 
+			</label>
+			<input 
+				type="date" 
 				id="{{.Field}}" 
 				name="{{.Field}}" 
 				value='{{.Value}}' 
