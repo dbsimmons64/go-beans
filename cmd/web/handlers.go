@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/dbsimmons64/go-beans/forms"
+	"github.com/dbsimmons64/go-beans/sessions"
 )
 
 func (app *app) Home(w http.ResponseWriter, r *http.Request) {
@@ -18,9 +19,18 @@ func (app *app) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	session := sessions.GetSession(r)
+	if session == nil {
+		sessionId := sessions.CreateSession(w)
+		session = sessions.SessionStore.Sessions[sessionId]
+	}
+
 	query := r.URL.Query()
 	year := getYear(query)
 	month := getMonth(query)
+
+	session.Data["year"] = year
+	session.Data["month"] = month
 
 	months := ListMonths()
 	years := ListYears()
@@ -51,6 +61,10 @@ func (app *app) Contact(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *app) storeTransaction(w http.ResponseWriter, r *http.Request) {
+
+	session := sessions.GetSession(r)
+	fmt.Println("Month", session.Data["month"])
+
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), 400)
