@@ -38,4 +38,17 @@ VALUES
 	if err != nil {
 		log.Fatalf("Failed to insert data: %v", err)
 	}
+
+	createTableQuery = `
+		CREATE TABLE IF NOT EXISTS sessions (
+			id TEXT PRIMARY KEY,
+			data TEXT NOT NULL,
+			expires_at DATETIME NOT NULL
+		);
+	`
+
+	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		log.Fatalf("Failed to create table: %v", err)
+	}
 }

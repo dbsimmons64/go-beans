@@ -16,10 +16,31 @@ type Session struct {
 	ExpiresAt time.Time
 }
 
-var SessionStore = struct {
+func (s Session) GetOrSetDefault(key string, defaultValue any) any {
+	if value, ok := s.Data[key]; ok {
+		return value
+	} else {
+		s.Data[key] = defaultValue
+		return defaultValue
+	}
+}
+
+type SessionStore interface {
+	CreateSession(w http.ResponseWriter, name string) *Session
+	GetSession(w http.ResponseWriter, r *http.Request, name string) *Session
+	DestroySession(w http.ResponseWriter, r *http.Request, name string)
+}
+
+type InMemorySessionStore struct {
 	sync.RWMutex
 	Sessions map[string]*Session
-}{Sessions: make(map[string]*Session)}
+}
+
+func NewInMemorySessionStore() *InMemorySessionStore {
+	return &InMemorySessionStore{
+		Sessions: make(map[string]*Session),
+	}
+}
 
 func generateSessionId() string {
 	b := make([]byte, 16) // 16 bytes = 128 bits
@@ -34,7 +55,7 @@ func generateSessionId() string {
 	return hex.EncodeToString(b)
 }
 
-func CreateSession(w http.ResponseWriter) string {
+func (store InMemorySessionStore) CreateSession(w http.ResponseWriter, name string) *Session {
 	sessionId := generateSessionId()
 
 	session := &Session{
@@ -43,50 +64,50 @@ func CreateSession(w http.ResponseWriter) string {
 		ExpiresAt: time.Now().Add(30 * time.Minute),
 	}
 
-	SessionStore.Lock()
-	SessionStore.Sessions[sessionId] = session
-	SessionStore.Unlock()
+	store.Lock()
+	store.Sessions[sessionId] = session
+	store.Unlock()
 
 	// Set session id in a cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:     "session_id",
+		Name:     name,
 		Value:    sessionId,
 		Expires:  session.ExpiresAt,
 		HttpOnly: true,
 	})
 
-	return sessionId
+	return session
 }
 
-func GetSession(r *http.Request) *Session {
-	cookie, err := r.Cookie("session_id")
+func (store InMemorySessionStore) GetSession(w http.ResponseWriter, r *http.Request, name string) *Session {
+	cookie, err := r.Cookie(name)
 
 	if err != nil {
 		log.Println("Unable to find cookie, session_id")
-		return nil
+		return store.CreateSession(w, name)
 	}
 
-	SessionStore.Lock()
-	session, exists := SessionStore.Sessions[cookie.Value]
-	SessionStore.Unlock()
+	store.Lock()
+	session, exists := store.Sessions[cookie.Value]
+	store.Unlock()
 
 	if !exists || session.ExpiresAt.Before(time.Now()) {
-		return nil
+		return store.CreateSession(w, name)
 	}
 
 	return session
 }
 
-func DestroySession(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session_id")
+func (store InMemorySessionStore) DestroySession(w http.ResponseWriter, r *http.Request, name string) {
+	cookie, err := r.Cookie(name)
 	if err == nil {
-		SessionStore.Lock()
-		delete(SessionStore.Sessions, cookie.Value)
-		SessionStore.Unlock()
+		store.Lock()
+		delete(store.Sessions, cookie.Value)
+		store.Unlock()
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:   "session_id",
+		Name:   name,
 		Value:  "",
 		MaxAge: -1, // expires immediately
 	})

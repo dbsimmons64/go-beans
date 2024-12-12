@@ -8,12 +8,14 @@ import (
 	"github.com/dbsimmons64/go-beans/database"
 	"github.com/dbsimmons64/go-beans/repos"
 	"github.com/dbsimmons64/go-beans/services"
+	"github.com/dbsimmons64/go-beans/sessions"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type app struct {
 	templateCache      TemplateCache
 	transactionService services.TransactionServiceImpl
+	sessionStore       sessions.SessionStore
 }
 
 func main() {
@@ -37,9 +39,13 @@ func main() {
 
 	repo := repos.TransactionRepositoryDB{DB: db}
 	service := services.TransactionServiceImpl{Repo: repo}
+	sessionStore := sessions.NewInMemorySessionStore()
+
 	app := app{
 		templateCache:      templateCache,
-		transactionService: service}
+		transactionService: service,
+		sessionStore:       sessionStore,
+	}
 
 	// Configure the server
 	srv := http.Server{
